@@ -3,9 +3,9 @@ module.exports = function (repl, file) {
 
   try {
     var stat = fs.statSync(file);
-    repl.rli.history = fs.readFileSync(file, 'utf-8').split('\n').reverse();
-    repl.rli.history.shift();
-    repl.rli.historyIndex = -1; // will be incremented before pop
+    repl.history = fs.readFileSync(file, 'utf-8').split('\n').reverse();
+    repl.history.shift();
+    repl.historyIndex = -1; // will be incremented before pop
   } catch (e) {}
 
   var fd = fs.openSync(file, 'a'), reval = repl.eval;
@@ -16,12 +16,12 @@ module.exports = function (repl, file) {
     throw err;
   });
 
-  repl.rli.addListener('line', function(code) {
+  repl.addListener('line', function(code) {
     if (code && code !== '.history') {
       wstream.write(code + '\n');
     } else {
-      repl.rli.historyIndex++;
-      repl.rli.history.pop();
+      repl.historyIndex++;
+      repl.history.pop();
     }
   });
 
@@ -33,7 +33,7 @@ module.exports = function (repl, file) {
     help : 'Show the history',
     action : function() {
       var out = [];
-      repl.rli.history.forEach(function(v, k) {
+      repl.history.forEach(function(v, k) {
         out.push(v);
       });
       repl.outputStream.write(out.reverse().join('\n') + '\n');
